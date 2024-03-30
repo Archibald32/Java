@@ -1,0 +1,100 @@
+import java.util.*;
+
+class User {
+    private String username;
+    private String email;
+    private List<Post> posts;
+    private List<Comment> comments;
+
+    public User(String username, String email) {
+        this.username = username;
+        this.email = email;
+        this.posts = new ArrayList<>();
+        this.comments = new ArrayList<>();
+    }
+
+    // Getters and setters for username, email, posts, comments
+
+    public void createPost(String content) {
+        Post post = new Post(content);
+        posts.add(post);
+    }
+
+    public void addComment(Post post, String content) {
+        Comment comment = new Comment(this, post, content);
+        comments.add(comment);
+        post.addComment(comment);
+    }
+}
+
+class Post {
+    private String content;
+    private User author;
+    private List<Comment> comments;
+
+    public Post(String content) {
+        this.content = content;
+        this.comments = new ArrayList<>();
+    }
+
+    // Getters and setters for content, author, comments
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+    }
+}
+
+class Comment {
+    private User author;
+    private Post post;
+    private String content;
+
+    public Comment(User author, Post post, String content) {
+        this.author = author;
+        this.post = post;
+        this.content = content;
+    }
+
+    // Getters and setters for author, post, content
+}
+
+public class SocialNetwork {
+    private List<User> users;
+
+    public SocialNetwork() {
+        this.users = new ArrayList<>();
+    }
+
+    public void addUser(User user) {
+        users.add(user);
+    }
+
+    public void displayAllPosts() {
+        for (User user : users) {
+            System.out.println("Posts by " + user.getUsername() + ":");
+            for (Post post : user.getPosts()) {
+                System.out.println(post.getContent());
+                for (Comment comment : post.getComments()) {
+                    System.out.println("\t" + comment.getContent() + " - by " + comment.getAuthor().getUsername());
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SocialNetwork socialNetwork = new SocialNetwork();
+
+        User user1 = new User("user1", "user1@example.com");
+        User user2 = new User("user2", "user2@example.com");
+
+        user1.createPost("Hello, world!");
+        user2.createPost("This is a test post.");
+
+        user1.addComment(user2.getPosts().get(0), "Nice post!");
+
+        socialNetwork.addUser(user1);
+        socialNetwork.addUser(user2);
+
+        socialNetwork.displayAllPosts();
+    }
+}
