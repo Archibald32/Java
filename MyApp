@@ -1,0 +1,118 @@
+Firstly, create an Android project called "MyApp", and then use the following code in the MainActivity.java file:
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity {
+
+    private RecyclerView recyclerView;
+    private MyAdapter adapter;
+    private List<String> dataList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        dataList = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            dataList.add("Item " + i);
+        }
+
+        adapter = new MyAdapter(dataList);
+        recyclerView.setAdapter(adapter);
+
+        Button addButton = findViewById(R.id.addButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataList.add("New Item");
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList("dataList", (ArrayList<String>) dataList);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        dataList = savedInstanceState.getStringArrayList("dataList");
+        adapter = new MyAdapter(dataList);
+        recyclerView.setAdapter(adapter);
+    }
+}
+Next, create a new Java file called "MyAdapter. java" and use the following code:
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+
+    private List<String> dataList;
+
+    public MyAdapter(List<String> dataList) {
+        this.dataList = dataList;
+    }
+
+    @NonNull
+    @Override
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout, parent, false);
+        return new MyViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        holder.textView.setText(dataList.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataList.size();
+    }
+
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+        TextView textView;
+
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+            textView = itemView.findViewById(R.id.textView);
+        }
+    }
+}
+Finally, create a layout file called "item_layout. XML" and use the following code:
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp" />
+</LinearLayout>
